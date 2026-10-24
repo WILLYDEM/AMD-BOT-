@@ -1,5 +1,10 @@
+const fs = require('fs')
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys')
 const P = require('pino')
+
+if (fs.existsSync('./auth')) {
+  fs.rmSync('./auth', { recursive: true, force: true })
+}
 
 async function startBot() {
     const { state, saveCreds } = await useMultiFileAuthState('auth')
@@ -11,30 +16,27 @@ async function startBot() {
     })
     sock.ev.on('creds.update', saveCreds)
 
-    // Si pas encore connecté, demande un code de jumelage
     if (!sock.authState.creds.registered) {
         setTimeout(async () => {
-            const phoneNumber = '2290197619879' // <--- METS TON NUMERO ICI SANS +  ex: 22990000000
             try {
-                const code = await sock.requestPairingCode(phoneNumber)
-                console.log('=================================')
-                console.log('TON CODE DE JUMELAGE: ' + code)
-                console.log('Va sur WhatsApp > Appareils liés > Lier avec numéro de téléphone')
-                console.log('=================================')
+                const code = await sock.requestPairingCode('2290197619879')
+                console.log('============================')
+                console.log('TON CODE: ' + code)
+                console.log('============================')
             } catch (e) {
-                console.log('Erreur pairing:', e.message)
+                console.log('Erreur pairing: ' + e.message)
             }
-        }, 3000)
+        }, 4000)
     }
 
     sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect } = update
         if (connection === 'close') {
             const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut
-            console.log('Connexion fermée, reconnexion dans 3s')
+            console.log('Connexion fermee, reconnexion dans 3s')
             if (shouldReconnect) setTimeout(startBot, 3000)
         } else if (connection === 'open') {
-            console.log('✅ BOT CONNECTÉ !!!!!')
+            console.log('✅ BOT CONNECTE !!!!!')
         }
     })
 
