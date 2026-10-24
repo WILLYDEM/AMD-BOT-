@@ -8,16 +8,10 @@ async function start() {
         version,
         auth: state,
         logger: P({ level: 'silent' }),
-        browser: ['Chrome','Chrome','1.0']
+        browser: ['Ubuntu','Chrome','20.0.04'],
+        printQRInTerminal: true
     })
     sock.ev.on('creds.update', saveCreds)
-    
-    await new Promise(r => setTimeout(r, 8000))
-    
-    if (!sock.authState.creds.registered) {
-        const code = await sock.requestPairingCode('2290197619879')
-        console.log('PAIRING_CODE:' + code)
-    }
     sock.ev.on('connection.update', (u) => {
         if (u.connection === 'open') console.log('CONNECTED_SUCCESS')
     })
