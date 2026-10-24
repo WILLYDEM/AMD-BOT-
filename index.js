@@ -12,14 +12,23 @@ async function start() {
         printQRInTerminal: false
     })
     sock.ev.on('creds.update', saveCreds)
+
+    // Attendre que le socket soit prêt
+    await new Promise(r => setTimeout(r, 3000))
+
     if (!sock.authState.creds.registered) {
-        const code = await sock.requestPairingCode('2290197619879')
-        console.log('CODE:' + code)
-    }
-    sock.ev.on('connection.update', async (u) => {
-        if (u.connection === 'open') {
-            console.log('CONNECTED')
+        try {
+            const code = await sock.requestPairingCode('2290197619879')
+            console.log('========================')
+            console.log('CODE: ' + code)
+            console.log('========================')
+        } catch(e) {
+            console.log('Erreur pairing, on reessaie:', e.message)
         }
+    }
+
+    sock.ev.on('connection.update', async (u) => {
+        if (u.connection === 'open') console.log('CONNECTED')
     })
 }
 start()
