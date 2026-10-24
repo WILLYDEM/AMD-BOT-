@@ -14,7 +14,7 @@ async function startBot() {
     // Si pas encore connecté, demande un code de jumelage
     if (!sock.authState.creds.registered) {
         setTimeout(async () => {
-            const phoneNumber = '229XXXXXXXX' // <--- METS TON NUMERO ICI SANS +  ex: 22990000000
+            const phoneNumber = '2290197619879' // <--- METS TON NUMERO ICI SANS +  ex: 22990000000
             try {
                 const code = await sock.requestPairingCode(phoneNumber)
                 console.log('=================================')
